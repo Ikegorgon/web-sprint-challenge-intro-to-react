@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Character from './components/Character.js';
 
 const App = () => {
-  const characters = [];
   // Try to think through what state you'll need for this app before starting. Then build out
   // the state properties here.
+  const [characters, setCharacters] = useState();
   const [active, setActive] = useState();
 
   // Fetch characters from the API in an effect hook. Remember, anytime you have a 
@@ -13,22 +14,26 @@ const App = () => {
   useEffect(() => {
     axios.get('https://swapi.dev/api/people/')
       .then(response => {
-        response.data.forEach(element => {
-          characters.push(element);
-        });
-        console.log(characters);
+        setCharacters(response.data);
       })
       .catch(error => {
-        console.error(error);
+        console.log(error);
       });
-  });
+  }, []);
 
   return (
     <div className="App">
       <h1 className="Header">Characters</h1>
-      
+      {characters && CharacterMaker(characters)}
     </div>
   );
+}
+
+function CharacterMaker(characters) {
+  let characterList = characters.map(character => {
+    return <Character data={character} />;
+  });
+  return characterList;
 }
 
 export default App;
